@@ -81,41 +81,7 @@ def detect_objects(interpreter, image, threshold, model_type):
         classes = get_output_tensor(interpreter, 1)
         scores = get_output_tensor(interpreter, 2)
         count = int(get_output_tensor(interpreter, 3))
-    elif model_type.startswith('yolo'):
-        input_details = interpreter.get_input_details()
-        output_details = interpreter.get_output_details()
-        interpreter.set_tensor(input_details[0]['index'], np.asarray(
-            [image / 255.]).astype(np.float32))
-        interpreter.invoke()
-        pred = [interpreter.get_tensor(output_details[i]['index'])
-                for i in range(len(output_details))]
-        if model_type == 'yolo':
-            boxes, pred_conf = filter_boxes(
-                pred[0], pred[1], score_threshold=0.25)
-        elif model_type == 'yolov3-tiny':
-            boxes, pred_conf = filter_boxes(
-                pred[1], pred[0], score_threshold=0.25)
-        boxes, scores, classes, count = tf.image.combined_non_max_suppression(
-            boxes=tf.reshape(boxes, (tf.shape(boxes)[0], -1, 1, 4)),
-            scores=tf.reshape(
-                pred_conf, (tf.shape(pred_conf)[0], -1, tf.shape(pred_conf)[-1])),
-            max_output_size_per_class=50,
-            max_total_size=50,
-            score_threshold=threshold
-        )
-        boxes, scores, classes, count = boxes.numpy()[0], scores.numpy()[
-            0], classes.numpy()[0], count.numpy()[0]
-
-    results = []
-    for i in range(count):
-        if scores[i] >= threshold:
-            result = {
-                'bounding_box': boxes[i],
-                'class_id': int(classes[i]),
-                'score': scores[i]
-            }
-            results.append(result)
-    return results
+    
 
 
 def make_interpreter(model_file, use_edgetpu):
