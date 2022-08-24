@@ -7,7 +7,7 @@ import numpy as np
 import dlib
 
 from trackable_object import TrackableObject
-from centroidtracker import CentroidTracker
+from centroid_tracker import CentroidTracker
 
 
 def load_labels(path):
