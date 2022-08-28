@@ -66,6 +66,13 @@ camera.set(5, 30)
 #camera.set(3, 1280)
 #camera.set(4, 720)
 
+if args.save_path:
+    width = int(camera.get(3))
+    height = int(camera.get(4))
+    fps_write = camera.get(cv2.CAP_PROP_FPS)
+    out = cv2.VideoWriter(args.save_path, cv2.VideoWriter_fourcc(
+        'M', 'J', 'P', 'G'), fps_write, (width, height))
+
 # Visualization parameters
 row_size = 30  # pixels
 left_margin = 24  # pixels
@@ -84,6 +91,9 @@ detection_options = processor.DetectionOptions(
 options = vision.ObjectDetectorOptions(
   base_options=base_options, detection_options=detection_options)
 detector = vision.ObjectDetector.create_from_options(options)
+
+
+
 
 @app.route('/')
 def index():
@@ -271,6 +281,10 @@ def count():
             cv2.putText(image_np, count_text, (left_margin,row_size*2), cv2.FONT_HERSHEY_PLAIN,font_size, text_colour, font_thickness)
         cv2.putText(image_np, 'Status: ' + status, (left_margin,row_size*3), cv2.FONT_HERSHEY_PLAIN,font_size, text_colour, font_thickness)
 
+       
+        if args.save_path:
+            out.write(image_np)
+        
         total_frames += 1
 
 
