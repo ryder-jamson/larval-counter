@@ -36,7 +36,7 @@ parser.add_argument('-la', '--labels', nargs='+', type=str,
 parser.add_argument('-a', '--axis', default=False, action="store_false",
                     help='Axis for cumulative counting (default=x axis)')
 parser.add_argument('-e', '--use_edgetpu',
-                    action='store_true', default=False, help='Use EdgeTPU')
+                    action='store_true', default=True, help='Use EdgeTPU')
 parser.add_argument('-s', '--skip_frames', type=int, default=3,
                     help='Number of frames to skip between using object detection model')
 parser.add_argument('-sh', '--show', default=True,
@@ -53,16 +53,16 @@ args = parser.parse_args()
 #Initialize the Flask app
 app = Flask(__name__)
 
-model = 'larva.tflite'
-enable_edgetpu = False
+model = 'larva_edgetpu.tflite'
+enable_edgetpu = True
 num_threads = 4
 
 
-#camera = cv2.VideoCapture(0)
-camera = cv2.VideoCapture('test_video.mp4')
-codec = cv2.VideoWriter_fourcc( 'Y', 'U', 'Y', 'V')
+camera = cv2.VideoCapture(1)
+#camera = cv2.VideoCapture('test_video.mp4')
+#codec = cv2.VideoWriter_fourcc( 'Y', 'U', 'Y', 'V')
 #camera.set(6, codec)
-#camera.set(5, 10)
+camera.set(5, 30)
 #camera.set(3, 1280)
 #camera.set(4, 720)
 
@@ -262,11 +262,13 @@ def count():
 
 
         # display count and status
+        count_text = 'Count: {:.1}'.format(counter)
+        
         if args.axis:
-            cv2.putText(image_np, f'Count: {counter}', text_location + (0,10), cv2.FONT_HERSHEY_PLAIN,
+            cv2.putText(image_np, count_text, text_location + (0,10), cv2.FONT_HERSHEY_PLAIN,
                             font_size, text_colour, font_thickness)
         else:
-            cv2.putText(image_np, f'Count: {counter}', (left_margin,row_size*2), cv2.FONT_HERSHEY_PLAIN,font_size, text_colour, font_thickness)
+            cv2.putText(image_np, count_text, (left_margin,row_size*2), cv2.FONT_HERSHEY_PLAIN,font_size, text_colour, font_thickness)
         cv2.putText(image_np, 'Status: ' + status, (left_margin,row_size*3), cv2.FONT_HERSHEY_PLAIN,font_size, text_colour, font_thickness)
 
         total_frames += 1
