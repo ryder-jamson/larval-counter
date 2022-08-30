@@ -159,8 +159,8 @@ def count():
                 cv2.rectangle(image_np, start_point, end_point, text_colour, 1)
 
                 
-                category = detection.categories[0]
-                class_name = category.category_name
+                category = detection.classes[0]
+                class_name = category.class_name
                 score = round(category.score, 2)
 
                 
@@ -272,7 +272,7 @@ def count():
 
 
         # display count and status
-        count_text = 'Count: {:.1}'.format(counter)
+        count_text = 'Count: {}'.format(counter)
         
         if args.axis:
             cv2.putText(image_np, count_text, text_location + (0,10), cv2.FONT_HERSHEY_PLAIN,
